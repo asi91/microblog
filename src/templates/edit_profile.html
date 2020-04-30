@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <ul>
-        <li>New user? <a href="{{ url_for('register') }}">sign in</a></li>
-    </ul>
-    <form action="" method="post" novalidate>
+    <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
@@ -13,13 +10,13 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for err in form.password.errors %}
+            {{ form.about_me.label }}<br>
+            {{ form.about_me(size=140) }}<br>
+            {% for err in form.about_me.errors %}
                 <span style="color: red;">{{ err }}</span>
             {% endfor %}
         </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
         <p>{{ form.submit() }}</p>
+
     </form>
 {% endblock %}

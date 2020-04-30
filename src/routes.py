@@ -1,9 +1,17 @@
 from .app import app, db
 from flask import render_template, redirect, flash, url_for, request
-from .forms import UserLogin, Registration
+from .forms import UserLogin, Registration, AboutMe
 from flask_login import current_user, login_user, logout_user, login_required
 from .models import User
 from werkzeug.urls import url_parse
+from datetime import datetime
+
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 
 @app.route('/')
@@ -37,7 +45,7 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for("login"))
 
-    return render_template("register.html", form=form, title="Register")
+    return render_template("register.html", title="Register", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -65,3 +73,36 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("index"))
+
+
+@app.route("/user/<username>")
+@login_required
+def user_profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = [
+        {
+            "author": user,
+            "body": "I am legend"
+        },
+        {
+            "author": user,
+            "body": "I am Python Developer"
+        }
+    ]
+    return render_template("user_profile.html", user=user, posts=posts)
+
+
+@app.route("/edit", methods=["GET", "POST"])
+@login_required
+def edit():
+    form = AboutMe()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        db.session.commit()
+        return redirect(url_for("user_profile", username=current_user.username))
+    elif request.method == "GET":
+        current_user.username = form.username
+        current_user.about_me = form.about_me
+
+    return render_template("edit_profile.html", title="Edit Profile", form=form)
