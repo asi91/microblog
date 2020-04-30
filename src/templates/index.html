@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Hello {{ user.username }} and welcome to my humble blog :)</h2>
+    <h2>Hello <span style="color: green;">{{ current_user.username }}</span> and welcome to my humble blog :)</h2>
     {% for p in posts %}
         <div><b>{{ p.author.username }} : </b> <i>{{ p.body }}</i></div>
     {% endfor %}
