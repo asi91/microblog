@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microblog-01
+spec:
+  selector:
+    matchLabels:
+      app: microblog
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: microblog  # match with `selector.matchLabels.app`
+    spec:
+      containers:
+        - name: blog
+          image: haassi/blog:0.1  # must be accessible (no local)
+          ports:
+            - containerPort: 5000
